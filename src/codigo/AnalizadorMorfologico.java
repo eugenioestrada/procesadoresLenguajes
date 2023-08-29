@@ -3,10 +3,6 @@ package codigo;
 import java.io.*;
 
 public class AnalizadorMorfologico {
-    private static void throwScannerException(Scanner scanner, String message) throws Exception {
-        throw new Exception("****ERROR MORFROLÓGICO EN [lin " + scanner.linea() + ", col " + scanner.columna() + "]: " + message);
-    }
-
     public static void main(String[] args) {
         String rutaEntrada = System.getProperty("user.dir") + "\\examples\\entrada3.txt";
         if (args.length > 0) {
@@ -27,24 +23,27 @@ public class AnalizadorMorfologico {
             while (true) {
                 Tokens token = scanner.yylex();
 
-                if (token == null) {
+                if (token == null || token == Tokens.TOK_ERROR) {
                     break;
                 }
 
+                resultado += token + "\t" + scanner.yytext() + "\n";
+
                 switch (token) {
                     case TOK_ERROR:
-                        throwScannerException(scanner, "SÍMBOLO NO PERMITIDO (" + scanner.yytext() + ")");
+
+                        break;
                     case TOK_IDENTIFICADOR:
                         String identificador = scanner.yytext();
-                        if (identificador.length() > 100) {
+                        /*if (identificador.length() > 100) {
                             throwScannerException(scanner, "IDENTIFICADOR DEMASIADO LARGO (" + identificador + ")");
                         }
                         else {
                             resultado += token + "\t" + scanner.yytext() + "\n";
-                        }
+                        }*/
                         break;
                     default:
-                        resultado += token + "\t" + scanner.yytext() + "\n";
+
                         break;
                 }
             }

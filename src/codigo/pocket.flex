@@ -57,8 +57,20 @@ espacio = [ ,\t,\r,\n]
  "true" { return TOK_TRUE; }
  "false" { return TOK_FALSE; }
 
-{letra}({letra}|{digito})* { lexema = yytext(); return TOK_IDENTIFICADOR; }
+{letra}({letra}|{digito})* {
+    lexema = yytext();
+    if (yylength() > 100) {
+        System.out.println("****ERROR MORFROLÓGICO EN [lin " + linea() + ", col " + columna() + "]: IDENTIFICADOR DEMASIADO LARGO (" + lexema + ")");
+        return TOK_ERROR;
+    }
+    else {
+        return TOK_IDENTIFICADOR;
+    }
+}
 {digito}+ { lexema = yytext(); return TOK_CONSTANTE_ENTERA; }
 {espacio}+ { }
 "//".* { }
-. { return TOK_ERROR; }
+. {
+    System.out.println("****ERROR MORFROLÓGICO EN [lin " + linea() + ", col " + columna() + "]: CARÁCTER NO PERMITIDO (" + yytext() + ")");
+    return TOK_ERROR;
+}
