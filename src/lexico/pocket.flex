@@ -4,6 +4,14 @@ import static lexico.Tokens.*;
 %%
 
 %class Scanner
+%line
+%column
+%{
+
+	public int linea() { return yyline; }
+	public int columna() {return yycolumn;}
+
+%}
 %type Tokens
 %{
 public String lexema;
