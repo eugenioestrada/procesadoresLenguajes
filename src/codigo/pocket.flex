@@ -1,5 +1,5 @@
-package lexico;
-import static lexico.Tokens.*;
+package codigo;
+import static codigo.Tokens.*;
 
 %%
 

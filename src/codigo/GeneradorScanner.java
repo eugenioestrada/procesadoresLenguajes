@@ -1,6 +1,4 @@
-package lexico;
-
-import java.io.*;
+package codigo;
 
 public class GeneradorScanner {
     public static void main(String[] args) {

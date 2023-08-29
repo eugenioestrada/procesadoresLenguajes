@@ -1,4 +1,4 @@
-package lexico;
+package codigo;
 
 public enum Tokens {
 
