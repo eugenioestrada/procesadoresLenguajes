@@ -2,7 +2,7 @@ package lexico;
 
 import java.io.*;
 
-public class Main {
+public class AnalizadorMorfologico {
     private static void throwScannerException(Scanner scanner, String message) throws Exception {
         throw new Exception("****ERROR MORFROLÓGICO EN [lin " + scanner.linea() + ", col " + scanner.columna() + "]: " + message);
     }
