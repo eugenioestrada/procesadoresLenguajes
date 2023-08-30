@@ -4,20 +4,46 @@ import java_cup.runtime.*;
 /* Lista de terminales */
 terminal TOK_MAS, TOK_MENOS, TOK_ASTERISCO, TOK_DIVISION;
 terminal TOK_PARENTESISIZQUIERDO, TOK_PARENTESISDERECHO, TOK_LLAVEIZQUIERDA, TOK_LLAVEDERECHA;
-terminal TOK_CONSTANTE;
+terminal TOK_CONSTANTE_ENTERA;
 terminal TOK_MENOSU;
 terminal TOK_ERROR;
+terminal TOK_FALSE;
+terminal TOK_TRUE;
+terminal TOK_WHILE;
+terminal TOK_ELSE;
+terminal TOK_IF;
+terminal TOK_BOOLEAN;
+terminal TOK_INT;
+terminal TOK_SCANF;
+terminal TOK_PRINTF;
+terminal TOK_MAIN;
+terminal TOK_MAYOR;
+terminal TOK_MENOR;
+terminal TOK_MAYORIGUAL;
+terminal TOK_MENORIGUAL;
+terminal TOK_DISTINTO;
+terminal TOK_IGUAL;
+terminal TOK_NOT;
+terminal TOK_OR;
+terminal TOK_AND;
+terminal TOK_COMA;
+terminal TOK_ASIGNACION;
+terminal TOK_PUNTOYCOMA;
+terminal TOK_IDENTIFICADOR;
 
 /* Lista de no terminales */
 non terminal exp, constante;
 
 /* Asociatividad y prioridad de los operadores */
 precedence left TOK_MAS, TOK_MENOS;
+precedence left TOK_DIVISION, TOK_ASTERISCO;
 
 /* Reglas de la gramática */
 
 exp ::= exp TOK_MAS exp {: System.out.println("suma"); :}
       | exp TOK_MENOS exp {: System.out.println("resta"); :}
+      | exp TOK_ASTERISCO exp {: System.out.println("multiplicación"); :}
+      | exp TOK_DIVISION exp {: System.out.println("division"); :}
       | constante {: System.out.println("número"); :};
 
-constante ::= TOK_CONSTANTE {: System.out.println("NUMERO"); :};
+constante ::= TOK_CONSTANTE_ENTERA {: System.out.println("NUMERO"); :};
