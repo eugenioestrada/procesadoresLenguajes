@@ -1,4 +1,4 @@
-package codigo;
+package analizadorLexico;
 
 public enum Tokens {
 

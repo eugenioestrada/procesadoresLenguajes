@@ -1,0 +1,23 @@
+package analizadorLexico;
+import java_cup.runtime.*;
+
+/* Lista de terminales */
+terminal TOK_MAS, TOK_MENOS, TOK_ASTERISCO, TOK_DIVISION;
+terminal TOK_PARENTESISIZQUIERDO, TOK_PARENTESISDERECHO, TOK_LLAVEIZQUIERDA, TOK_LLAVEDERECHA;
+terminal TOK_CONSTANTE;
+terminal TOK_MENOSU;
+terminal TOK_ERROR;
+
+/* Lista de no terminales */
+non terminal exp, constante;
+
+/* Asociatividad y prioridad de los operadores */
+precedence left TOK_MAS, TOK_MENOS;
+
+/* Reglas de la gramática */
+
+exp ::= exp TOK_MAS exp {: System.out.println("suma"); :}
+      | exp TOK_MENOS exp {: System.out.println("resta"); :}
+      | constante {: System.out.println("número"); :};
+
+constante ::= TOK_CONSTANTE {: System.out.println("NUMERO"); :};
