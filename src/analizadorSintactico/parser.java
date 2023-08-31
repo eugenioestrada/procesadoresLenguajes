@@ -31,9 +31,9 @@ public class parser extends java_cup.runtime.lr_parser {
   /** Production table. */
   protected static final short _production_table[][] = 
     unpackFromStrings(new String[] {
-    "\000\007\000\002\002\005\000\002\002\004\000\002\002" +
+    "\000\010\000\002\002\005\000\002\002\004\000\002\002" +
     "\005\000\002\002\005\000\002\002\005\000\002\002\003" +
-    "\000\002\003\003" });
+    "\000\002\003\003\000\002\012\003" });
 
   /** Access to production table. */
   public short[][] production_table() {return _production_table;}
@@ -191,6 +191,15 @@ class CUP$parser$actions {
               Object RESULT =null;
 		 System.out.println("NUMERO"); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("constante",1, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
+            }
+          return CUP$parser$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 7: // identificador ::= TOK_IDENTIFICADOR 
+            {
+              Object RESULT =null;
+		 System.out.println("IDENTIFICADOR"); 
+              CUP$parser$result = parser.getSymbolFactory().newSymbol("identificador",8, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
 
