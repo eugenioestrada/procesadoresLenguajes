@@ -1,12 +1,18 @@
 package analizadorLexico;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
-public class AnalizadorMorfologico {
+public class AnalizadorLexico {
     public static void main(String[] args) {
         String rutaEntrada = System.getProperty("user.dir") + "\\examples\\entrada3.txt";
         if (args.length > 0) {
             rutaEntrada = args[0];
+
+            if (!Files.exists(Paths.get(rutaEntrada))) {
+                System.out.println("El fichero de entrada del primer argumento no existe, se espera una ruta absoluta.");
+            }
         }
 
         String rutaSalida = System.getProperty("user.dir") + "\\examples\\salida3.txt";
@@ -31,16 +37,7 @@ public class AnalizadorMorfologico {
 
                 switch (token) {
                     case TOK_ERROR:
-
-                        break;
-                    case TOK_IDENTIFICADOR:
-                        String identificador = scanner.yytext();
-                        /*if (identificador.length() > 100) {
-                            throwScannerException(scanner, "IDENTIFICADOR DEMASIADO LARGO (" + identificador + ")");
-                        }
-                        else {
-                            resultado += token + "\t" + scanner.yytext() + "\n";
-                        }*/
+                        System.out.println("Se ha encontrado un error morfológico");
                         break;
                     default:
 
