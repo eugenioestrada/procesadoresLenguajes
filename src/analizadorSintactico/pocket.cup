@@ -32,13 +32,23 @@ terminal TOK_PUNTOYCOMA;
 terminal TOK_IDENTIFICADOR;
 
 /* Lista de no terminales */
-non terminal exp, constante;
+non terminal exp, constante, identificador;
+non terminal declaraciones, declaracion, clase, clase_escalar, tipo;
+non terminal identificadores, identificador;
+non terminal funciones, funcion, parametros_funcion, parametro_funcion, otros_paramentros_funcion, declaraciones_funcion;
+non terminal sentencias, sentencia, sentencia_simple;
+non terminal bloque, asignacion, lectura, escritura, retorno_funcion;
+non terminal condicional, bucle, seleccion;
 
 /* Asociatividad y prioridad de los operadores */
 precedence left TOK_MAS, TOK_MENOS;
 precedence left TOK_DIVISION, TOK_ASTERISCO;
 
 /* Reglas de la gramática */
+
+programa :== TOK_PROGRAMA TOK_LLAVEIZQUIERDA declaraciones funciones sentencias TOK_LLAVEDERECHA {: System.out.println("programa") :}
+
+declaraciones :==
 
 exp ::= exp TOK_MAS exp {: System.out.println("suma"); :}
       | exp TOK_MENOS exp {: System.out.println("resta"); :}
@@ -47,3 +57,5 @@ exp ::= exp TOK_MAS exp {: System.out.println("suma"); :}
       | constante {: System.out.println("número"); :};
 
 constante ::= TOK_CONSTANTE_ENTERA {: System.out.println("NUMERO"); :};
+
+identificador ::= TOK_IDENTIFICADOR {: System.out.println("IDENTIFICADOR"); :};
