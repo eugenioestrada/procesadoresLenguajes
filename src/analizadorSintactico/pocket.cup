@@ -84,6 +84,7 @@ precedence left TOK_AND, TOK_OR;
 precedence left TOK_IGUAL, TOK_DISTINTO;
 precedence left TOK_MENORIGUAL, TOK_MAYORIGUAL, TOK_MENOR, TOK_MAYOR;
 precedence left TOK_WHILE, TOK_IF;
+precedence right TOK_MENOSU;
 
 /* Reglas de la gramática */
 
