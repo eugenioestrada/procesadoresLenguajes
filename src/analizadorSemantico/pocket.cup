@@ -1,0 +1,157 @@
+package analizadorSemantico;
+
+import java_cup.runtime.*;
+import java.io.Writer;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
+parser code {:
+    private Yylex getYylex() {
+        return (Yylex)getScanner();
+    }
+
+    public void syntax_error(Symbol cur_token) {
+        Yylex s = getYylex();
+        String str = "****Error sintactico en [lin " + s.linea() + ", col " + s.columna() + "]";
+	    System.err.println(str);
+    }
+
+    private void printProduccion(int num, String produccion) {
+        Writer writer;
+        String str = ";R" + num + ":\t" + produccion;
+        try{
+             writer = new BufferedWriter(new FileWriter("sinout.txt", true));
+             writer.write(str + "\n");
+             writer.close();
+        } catch (IOException e) {
+             System.out.println(e.getMessage());
+        }
+    }
+:}
+
+/* Lista de terminales */
+terminal TOK_MAS, TOK_MENOS, TOK_ASTERISCO, TOK_DIVISION;
+terminal TOK_PARENTESISIZQUIERDO, TOK_PARENTESISDERECHO, TOK_LLAVEIZQUIERDA, TOK_LLAVEDERECHA;
+terminal TOK_CONSTANTE_ENTERA;
+terminal TOK_MENOSU;
+terminal TOK_ERROR;
+terminal TOK_FALSE;
+terminal TOK_TRUE;
+terminal TOK_WHILE;
+terminal TOK_ELSE;
+terminal TOK_IF;
+terminal TOK_BOOLEAN;
+terminal TOK_INT;
+terminal TOK_SCANF;
+terminal TOK_PRINTF;
+terminal TOK_MAIN;
+terminal TOK_MAYOR;
+terminal TOK_MENOR;
+terminal TOK_MAYORIGUAL;
+terminal TOK_MENORIGUAL;
+terminal TOK_DISTINTO;
+terminal TOK_IGUAL;
+terminal TOK_NOT;
+terminal TOK_OR;
+terminal TOK_AND;
+terminal TOK_COMA;
+terminal TOK_ASIGNACION;
+terminal TOK_PUNTOYCOMA;
+terminal TOK_IDENTIFICADOR;
+
+/* Lista de no terminales */
+non terminal programa;
+non terminal exp, constante, constante_entera;
+non terminal declaraciones, declaracion, clase, clase_escalar, tipo;
+non terminal identificadores, identificador;
+non terminal sentencias, sentencia, sentencia_simple;
+non terminal bloque, asignacion, lectura, escritura;
+non terminal condicional, bucle;
+non terminal comparacion, constante_logica;
+non terminal numero;
+
+precedence left TOK_MAS, TOK_MENOS;
+precedence left TOK_DIVISION, TOK_ASTERISCO;
+precedence left TOK_AND, TOK_OR;
+precedence left TOK_IGUAL, TOK_DISTINTO;
+precedence left TOK_MENORIGUAL, TOK_MAYORIGUAL, TOK_MENOR, TOK_MAYOR;
+precedence left TOK_WHILE, TOK_IF;
+precedence right TOK_MENOSU;
+
+/* Reglas de la gramática */
+
+programa            ::= TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones sentencias TOK_LLAVEDERECHA {: printProduccion(1, "<programa> ::= main { <declaraciones> <funciones> <sentencias> }"); :}
+                    | TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones TOK_LLAVEDERECHA {: printProduccion(1, "<programa> ::= main { <declaraciones> <funciones> <sentencias> }"); :}
+                    | TOK_MAIN TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {: printProduccion(1, "<programa> ::= main { <declaraciones> <funciones> <sentencias> }"); :} ;
+
+declaraciones       ::= declaracion {: printProduccion(2, "<declaraciones> ::= <declaracion>"); :}
+                    |   declaracion declaraciones {: printProduccion(3, "<declaraciones> ::= <declaracion> <declaraciones>"); :};
+
+declaracion         ::= clase identificadores TOK_PUNTOYCOMA {: printProduccion(4, "<declaracion> ::= <clase> <identificadores> ;"); :};
+
+clase               ::= clase_escalar {: printProduccion(5, "<clase> ::= <clase_escalar>"); :} ;
+
+clase_escalar       ::= tipo {: printProduccion(9, "<clase_escalar> ::= <tipo>"); :};
+
+tipo                ::= TOK_INT {: printProduccion(10, "<tipo> ::= int"); :}
+                    |   TOK_BOOLEAN {: printProduccion(11, "<tipo> ::= boolean"); :};
+
+identificadores     ::= identificador {: printProduccion(18, "<identificadores> ::= <identificador>"); :}
+                    |   identificador TOK_COMA identificadores {: printProduccion(19, "<identificadores> ::=<identificador>,<identificadores>"); :};
+
+sentencias          ::= sentencia {: printProduccion(30, "<sentencias> ::= <sentencia>"); :}
+                    |   sentencia sentencias {: printProduccion(31, "<sentencias> ::= <sentencia> <sentencias>"); :};
+
+sentencia           ::= sentencia_simple TOK_PUNTOYCOMA {: printProduccion(32, "<sentencia> ::= <sentencia_simple> ;"); :}
+                    |   bloque {: printProduccion(33, "<sentencia> ::= <bloque>"); :};
+
+sentencia_simple    ::= asignacion {: printProduccion(34, "<sentencia_simple> ::= <asignacion>"); :}
+                    |   lectura {: printProduccion(35, "<sentencia_simple> ::= <lectura>"); :}
+                    |   escritura {: printProduccion(36, "<sentencia_simple> ::= <escritura>"); :};
+
+bloque              ::= condicional {: printProduccion(40, "<bloque> ::= <condicional>"); :}
+                    |   bucle {: printProduccion(41, "<bloque> ::= <bucle>"); :};
+
+asignacion          ::= identificador TOK_ASIGNACION exp {: printProduccion(43, "<asignacion> ::= <identificador> = <exp>"); :};
+
+condicional         ::= TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {: printProduccion(50, "<condicional> ::= if ( <exp> ) { <sentencias> }"); :}
+                    |   TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {: printProduccion(51, "<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }"); :};
+
+bucle               ::= TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {: printProduccion(52, "<bucle> ::= while ( <exp> ) { <sentencias> }"); :};
+
+lectura             ::= TOK_SCANF identificador {: printProduccion(54, "<lectura> ::= scanf <identificador>"); :};
+
+escritura           ::= TOK_PRINTF exp {: printProduccion(56, "<escritura> ::= printf <exp>"); :};
+
+exp                 ::= exp TOK_MAS exp {: printProduccion(72, "<exp> ::= <exp> + <exp>"); :}
+                    |   exp TOK_MENOS exp {: printProduccion(73, "<exp> ::= <exp> - <exp>"); :}
+                    |   exp TOK_DIVISION exp {: printProduccion(74, "<exp> ::= <exp> / <exp>"); :}
+                    |   exp TOK_ASTERISCO exp {: printProduccion(75, "<exp> ::= <exp> * <exp>"); :}
+                    |   TOK_MENOS exp {: printProduccion(76, "<exp> ::= - <exp>"); :} %prec TOK_MENOSU
+                    |   exp TOK_AND exp {: printProduccion(77, "<exp> ::= <exp> && <exp>"); :}
+                    |   exp TOK_OR exp {: printProduccion(78, "<exp> ::= <exp> || <exp>"); :}
+                    |   TOK_NOT exp {: printProduccion(79, "<exp> ::= ! <exp>"); :}
+                    |   identificador {: printProduccion(80, "<exp> ::= <identificador>"); :}
+                    |   constante {: printProduccion(81, "<exp> ::= <constante>"); :}
+                    |   TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO {: printProduccion(82, "<exp> ::= ( <exp> )"); :}
+                    |   TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO {: printProduccion(83, "<exp> ::= ( <comparacion> )"); :};
+
+comparacion         ::= exp TOK_IGUAL exp {: printProduccion(93, "<comparacion> ::= <exp> == <exp>"); :}
+                    |   exp TOK_DISTINTO exp {: printProduccion(94, "<comparacion> ::= <exp> != <exp>"); :}
+                    |   exp TOK_MENORIGUAL exp {: printProduccion(95, "<comparacion> ::= <exp> <= <exp>"); :}
+                    |   exp TOK_MAYORIGUAL exp {: printProduccion(96, "<comparacion> ::= <exp> >= <exp>"); :}
+                    |   exp TOK_MENOR exp {: printProduccion(97, "<comparacion> ::= <exp> < <exp>"); :}
+                    |   exp TOK_MAYOR exp {: printProduccion(98, "<comparacion> ::= <exp> > <exp>"); :};
+
+constante           ::= constante_logica {: printProduccion(99, "<constante> ::= <constante_logica>"); :}
+                    |   constante_entera {: printProduccion(100, "<constante> ::= <constante_entera>"); :};
+
+constante_logica    ::= TOK_TRUE {: printProduccion(102, "<constante_logica> ::= true"); :}
+                    |   TOK_FALSE {: printProduccion(103, "<constante_logica> ::= false"); :};
+
+constante_entera    ::= numero {: printProduccion(104, "<constante_entera> ::= <numero>"); :};
+
+numero              ::= TOK_CONSTANTE_ENTERA {: printProduccion(105, "<numero> ::= TOK_CONSTANTE_ENTERA"); :};
+
+identificador       ::= TOK_IDENTIFICADOR {: printProduccion(108, "<identificador> ::= TOK_IDENTIFICADOR"); :};
