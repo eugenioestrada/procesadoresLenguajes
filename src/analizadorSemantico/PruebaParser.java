@@ -4,7 +4,7 @@ import java_cup.runtime.Scanner;
 
 import java.io.*;
 
-public class PruebaAnalizadorSintactico {
+public class PruebaParser {
     public static void main(String[] args) {
         String ficheroEntrada = "prueba1.pck";
         String directorio = System.getProperty("user.dir") + "\\examples\\";

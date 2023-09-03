@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-public class PruebaAnalizadorSintactico {
+public class PruebaParser {
     public static void main(String[] args) {
         String ficheroEntrada = "prueba1.pck";
         String directorio = System.getProperty("user.dir") + "\\examples\\";

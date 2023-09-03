@@ -1,6 +1,6 @@
 package analizadorSemantico;
 
-public class GeneradorAnalizadorSintactico {
+public class GeneradorParser {
     public static void main(String[] args) {
         String ficheroEspecificacion = System.getProperty("user.dir") + "\\src\\analizadorSemantico\\pocket.cup";
         System.out.println(ficheroEspecificacion);
