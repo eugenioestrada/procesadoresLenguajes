@@ -1,5 +1,9 @@
 package analizadorSintactico;
 import java_cup.runtime.*;
+import java.io.Writer;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 %%
 
@@ -8,14 +12,22 @@ import java_cup.runtime.*;
 %line
 %column
 %{
+    public String lexema;
+	public int linea() { return yyline + 1; }
+	public int columna() { return yycolumn + 1; }
 
-	public int linea() { return yyline; }
-	public int columna() {return yycolumn;}
+    private void writeln(String str) {
+        Writer writer;
+        try {
+             writer = new BufferedWriter(new FileWriter("sinout.txt", true));
+             writer.write(str + "\n");
+             writer.close();
+        } catch (IOException e) {
+             System.out.println(e.getMessage());
+        }
+    }
+%}
 
-%}
-%{
-public String lexema;
-%}
 letra = [a-zA-Z]
 digito = [0-9]
 espacio = [ \t\r\n]
@@ -24,45 +36,45 @@ espacio = [ \t\r\n]
 
 /* Palabras reservadas */
 
-"main" { return new Symbol(sym.TOK_MAIN); }
-"int" { return new Symbol(sym.TOK_INT); }
-"boolean" { return new Symbol(sym.TOK_BOOLEAN); }
-"if" { return new Symbol(sym.TOK_IF); }
-"else" { return new Symbol(sym.TOK_ELSE); }
-"while" { return new Symbol(sym.TOK_WHILE); }
-"printf" { return new Symbol(sym.TOK_PRINTF); }
-"scanf" { return new Symbol(sym.TOK_SCANF); }
+"main" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAIN); }
+"int" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_INT); }
+"boolean" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_BOOLEAN); }
+"if" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_IF); }
+"else" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ELSE); }
+"while" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_WHILE); }
+"printf" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PRINTF); }
+"scanf" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_SCANF); }
 
 /* Símbolos de puntuación y especiales */
 
-"{" { return new Symbol(sym.TOK_LLAVEIZQUIERDA); }
-"}" { return new Symbol(sym.TOK_LLAVEDERECHA); }
-"(" { return new Symbol(sym.TOK_PARENTESISIZQUIERDO); }
-")" { return new Symbol(sym.TOK_PARENTESISDERECHO); }
-"," { return new Symbol(sym.TOK_COMA); }
-";" { return new Symbol(sym.TOK_PUNTOYCOMA); }
+"{" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_LLAVEIZQUIERDA); }
+"}" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_LLAVEDERECHA); }
+"(" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PARENTESISIZQUIERDO); }
+")" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PARENTESISDERECHO); }
+"," { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_COMA); }
+";" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PUNTOYCOMA); }
 
 /* Operadores */
 
-"+" { return new Symbol(sym.TOK_MAS); }
-"-" { return new Symbol(sym.TOK_MENOS); }
-"/" { return new Symbol(sym.TOK_DIVISION); }
-"*" { return new Symbol(sym.TOK_ASTERISCO); }
-"&&" { return new Symbol(sym.TOK_AND); }
-"||" { return new Symbol(sym.TOK_OR); }
-"!" { return new Symbol(sym.TOK_NOT); }
-"=" { return new Symbol(sym.TOK_ASIGNACION); }
-"==" { return new Symbol(sym.TOK_IGUAL); }
-"!=" { return new Symbol(sym.TOK_DISTINTO); }
-"<=" { return new Symbol(sym.TOK_MENORIGUAL); }
-">=" { return new Symbol(sym.TOK_MAYORIGUAL); }
-"<" { return new Symbol(sym.TOK_MENOR); }
-">" { return new Symbol(sym.TOK_MAYOR); }
+"+" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAS); }
+"-" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENOS); }
+"/" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_DIVISION); }
+"*" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ASTERISCO); }
+"&&" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_AND); }
+"||" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_OR); }
+"!" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_NOT); }
+"=" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ASIGNACION); }
+"==" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_IGUAL); }
+"!=" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_DISTINTO); }
+"<=" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENORIGUAL); }
+">=" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAYORIGUAL); }
+"<" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENOR); }
+">" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAYOR); }
 
 /* Identificadores y constantes */
 
-"true" { return new Symbol(sym.TOK_TRUE); }
-"false" { return new Symbol(sym.TOK_FALSE); }
+"true" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_TRUE); }
+"false" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_FALSE); }
 
 {letra}({letra}|{digito})* {
     lexema = yytext();
@@ -71,10 +83,15 @@ espacio = [ \t\r\n]
         return new Symbol(sym.TOK_ERROR);
     }
     else {
+        writeln(";D:\t" + lexema);
         return new Symbol(sym.TOK_IDENTIFICADOR);
     }
 }
-{digito}+ { lexema = yytext(); return new Symbol(sym.TOK_CONSTANTE_ENTERA); }
+{digito}+ {
+    lexema = yytext();
+    writeln(";D:\t" + lexema);
+    return new Symbol(sym.TOK_CONSTANTE_ENTERA);
+}
 
 /* Eliminación de espacios */
 

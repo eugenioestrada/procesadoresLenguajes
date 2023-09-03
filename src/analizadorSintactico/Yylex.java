@@ -4,6 +4,10 @@
 
 package analizadorSintactico;
 import java_cup.runtime.*;
+import java.io.Writer;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 
 @SuppressWarnings("fallthrough")
@@ -323,11 +327,20 @@ class Yylex implements java_cup.runtime.Scanner {
   private boolean zzEOFDone;
 
   /* user code: */
+    public String lexema;
+	public int linea() { return yyline + 1; }
+	public int columna() { return yycolumn + 1; }
 
-	public int linea() { return yyline; }
-	public int columna() {return yycolumn;}
-
-public String lexema;
+    private void writeln(String str) {
+        Writer writer;
+        try {
+             writer = new BufferedWriter(new FileWriter("sinout.txt", true));
+             writer.write(str + "\n");
+             writer.close();
+        } catch (IOException e) {
+             System.out.println(e.getMessage());
+        }
+    }
 
 
   /**
@@ -765,67 +778,69 @@ public String lexema;
           // fall through
           case 36: break;
           case 3:
-            { return new Symbol(sym.TOK_NOT);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_NOT);
             }
           // fall through
           case 37: break;
           case 4:
-            { return new Symbol(sym.TOK_PARENTESISIZQUIERDO);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PARENTESISIZQUIERDO);
             }
           // fall through
           case 38: break;
           case 5:
-            { return new Symbol(sym.TOK_PARENTESISDERECHO);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PARENTESISDERECHO);
             }
           // fall through
           case 39: break;
           case 6:
-            { return new Symbol(sym.TOK_ASTERISCO);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ASTERISCO);
             }
           // fall through
           case 40: break;
           case 7:
-            { return new Symbol(sym.TOK_MAS);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAS);
             }
           // fall through
           case 41: break;
           case 8:
-            { return new Symbol(sym.TOK_COMA);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_COMA);
             }
           // fall through
           case 42: break;
           case 9:
-            { return new Symbol(sym.TOK_MENOS);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENOS);
             }
           // fall through
           case 43: break;
           case 10:
-            { return new Symbol(sym.TOK_DIVISION);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_DIVISION);
             }
           // fall through
           case 44: break;
           case 11:
-            { lexema = yytext(); return new Symbol(sym.TOK_CONSTANTE_ENTERA);
+            { lexema = yytext();
+    writeln(";D:\t" + lexema);
+    return new Symbol(sym.TOK_CONSTANTE_ENTERA);
             }
           // fall through
           case 45: break;
           case 12:
-            { return new Symbol(sym.TOK_PUNTOYCOMA);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PUNTOYCOMA);
             }
           // fall through
           case 46: break;
           case 13:
-            { return new Symbol(sym.TOK_MENOR);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENOR);
             }
           // fall through
           case 47: break;
           case 14:
-            { return new Symbol(sym.TOK_ASIGNACION);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ASIGNACION);
             }
           // fall through
           case 48: break;
           case 15:
-            { return new Symbol(sym.TOK_MAYOR);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAYOR);
             }
           // fall through
           case 49: break;
@@ -836,98 +851,99 @@ public String lexema;
         return new Symbol(sym.TOK_ERROR);
     }
     else {
+        writeln(";D:\t" + lexema);
         return new Symbol(sym.TOK_IDENTIFICADOR);
     }
             }
           // fall through
           case 50: break;
           case 17:
-            { return new Symbol(sym.TOK_LLAVEIZQUIERDA);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_LLAVEIZQUIERDA);
             }
           // fall through
           case 51: break;
           case 18:
-            { return new Symbol(sym.TOK_LLAVEDERECHA);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_LLAVEDERECHA);
             }
           // fall through
           case 52: break;
           case 19:
-            { return new Symbol(sym.TOK_DISTINTO);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_DISTINTO);
             }
           // fall through
           case 53: break;
           case 20:
-            { return new Symbol(sym.TOK_AND);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_AND);
             }
           // fall through
           case 54: break;
           case 21:
-            { return new Symbol(sym.TOK_MENORIGUAL);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENORIGUAL);
             }
           // fall through
           case 55: break;
           case 22:
-            { return new Symbol(sym.TOK_IGUAL);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_IGUAL);
             }
           // fall through
           case 56: break;
           case 23:
-            { return new Symbol(sym.TOK_MAYORIGUAL);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAYORIGUAL);
             }
           // fall through
           case 57: break;
           case 24:
-            { return new Symbol(sym.TOK_IF);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_IF);
             }
           // fall through
           case 58: break;
           case 25:
-            { return new Symbol(sym.TOK_OR);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_OR);
             }
           // fall through
           case 59: break;
           case 26:
-            { return new Symbol(sym.TOK_INT);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_INT);
             }
           // fall through
           case 60: break;
           case 27:
-            { return new Symbol(sym.TOK_ELSE);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ELSE);
             }
           // fall through
           case 61: break;
           case 28:
-            { return new Symbol(sym.TOK_MAIN);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAIN);
             }
           // fall through
           case 62: break;
           case 29:
-            { return new Symbol(sym.TOK_TRUE);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_TRUE);
             }
           // fall through
           case 63: break;
           case 30:
-            { return new Symbol(sym.TOK_FALSE);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_FALSE);
             }
           // fall through
           case 64: break;
           case 31:
-            { return new Symbol(sym.TOK_SCANF);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_SCANF);
             }
           // fall through
           case 65: break;
           case 32:
-            { return new Symbol(sym.TOK_WHILE);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_WHILE);
             }
           // fall through
           case 66: break;
           case 33:
-            { return new Symbol(sym.TOK_PRINTF);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PRINTF);
             }
           // fall through
           case 67: break;
           case 34:
-            { return new Symbol(sym.TOK_BOOLEAN);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_BOOLEAN);
             }
           // fall through
           case 68: break;

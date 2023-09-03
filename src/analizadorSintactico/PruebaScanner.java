@@ -1,19 +1,27 @@
 package analizadorSintactico;
 
-import java_cup.runtime.Scanner;
 import java_cup.runtime.Symbol;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.*;
+import java.io.Writer;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 public class PruebaScanner {
     public static void main(String[] args) {
         String ficheroEntrada = "prueba1.pck";
         String directorio = System.getProperty("user.dir") + "\\examples\\";
-
-        String resultado = "";
-
         System.out.println("Analizando: " + directorio + ficheroEntrada);
+
+        Writer writer;
+
+        try {
+            writer = new BufferedWriter(new FileWriter("sinout.txt", false));
+            writer.write("");
+            writer.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
 
         try {
             BufferedReader lector = new BufferedReader(new FileReader(directorio + ficheroEntrada));
