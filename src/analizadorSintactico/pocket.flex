@@ -18,7 +18,7 @@ public String lexema;
 %}
 letra = [a-zA-Z]
 digito = [0-9]
-espacio = [ ,\t,\r,\n]
+espacio = [ \t\r\n]
 
 %%
 

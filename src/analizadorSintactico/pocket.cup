@@ -1,5 +1,16 @@
-package analizadorLexico;
+package analizadorSintactico;
 import java_cup.runtime.*;
+
+parser code {:
+    private Yylex getYylex() {
+        return (Yylex)getScanner();
+    }
+
+    public void syntax_error(Symbol cur_token) {
+        Yylex s = getYylex();
+	    System.err.println("****Error sintactico en [lin " + s.linea() + ", col " + s.columna() + "]");
+    }
+:}
 
 /* Lista de terminales */
 terminal TOK_MAS, TOK_MENOS, TOK_ASTERISCO, TOK_DIVISION;
@@ -32,28 +43,123 @@ terminal TOK_PUNTOYCOMA;
 terminal TOK_IDENTIFICADOR;
 
 /* Lista de no terminales */
-non terminal exp, constante;
+non terminal programa;
+non terminal exp, constante, constante_entera;
 non terminal declaraciones, declaracion, clase, clase_escalar, tipo;
 non terminal identificadores, identificador;
-non terminal funciones, funcion, parametros_funcion, parametro_funcion, otros_paramentros_funcion, declaraciones_funcion;
 non terminal sentencias, sentencia, sentencia_simple;
-non terminal bloque, asignacion, lectura, escritura, retorno_funcion;
-non terminal condicional, bucle, seleccion;
+non terminal bloque, asignacion, lectura, escritura;
+non terminal condicional, bucle;
+non terminal comparacion, constante_logica;
+non terminal llave_izq, llave_der, paren_izq, paren_der;
+non terminal while, if, else, puntoycoma, coma;
+non terminal main;
+non terminal int, boolean;
 
-/* Asociatividad y prioridad de los operadores */
+precedence right identificadores, clase;
 precedence left TOK_MAS, TOK_MENOS;
 precedence left TOK_DIVISION, TOK_ASTERISCO;
+precedence left TOK_AND, TOK_OR;
+precedence left TOK_IGUAL, TOK_DISTINTO;
+precedence left TOK_MENORIGUAL, TOK_MAYORIGUAL, TOK_MENOR, TOK_MAYOR;
+precedence left TOK_WHILE, TOK_IF;
 
 /* Reglas de la gramática */
 
-/* programa :== TOK_PROGRAMA TOK_LLAVEIZQUIERDA declaraciones funciones sentencias TOK_LLAVEDERECHA {: System.out.println("programa") :} */
+programa            ::= main llave_izq declaraciones sentencias llave_der {: System.out.println("main"); :}
+                    | main llave_izq declaraciones llave_der {: System.out.println("main"); :}
+                    | main llave_izq sentencias llave_der {: System.out.println("main"); :}
+                    | main llave_izq llave_der {: System.out.println("main"); :} ;
 
-exp ::= exp TOK_MAS exp {: System.out.println("suma"); :}
-      | exp TOK_MENOS exp {: System.out.println("resta"); :}
-      | exp TOK_ASTERISCO exp {: System.out.println("multiplicación"); :}
-      | exp TOK_DIVISION exp {: System.out.println("division"); :}
-      | constante {: System.out.println("número"); :};
+declaraciones       ::= declaracion
+                    |   declaracion declaraciones ;
 
-constante ::= TOK_CONSTANTE_ENTERA {: System.out.println("NUMERO"); :};
+declaracion         ::= clase identificadores puntoycoma {: System.out.println("declaracion"); :};
 
-identificador ::= TOK_IDENTIFICADOR {: System.out.println("IDENTIFICADOR"); :};
+clase               ::= clase_escalar {: System.out.println("<clase> ::= <clase_escalar>"); :} ;
+
+clase_escalar       ::= tipo {: System.out.println("<clase_escalar> ::= <tipo>"); :};
+
+tipo                ::= int {: System.out.println("<tipo> ::= int"); :}
+                    |   boolean {: System.out.println("<tipo> ::= boolean"); :};
+
+identificadores     ::= identificador
+                    |   identificador coma identificadores ;
+
+sentencias          ::= sentencia
+                    |   sentencia sentencias ;
+
+sentencia           ::= sentencia_simple puntoycoma
+                    |   bloque ;
+
+sentencia_simple    ::= asignacion
+                    |   lectura
+                    |   escritura ;
+
+bloque              ::= condicional
+                    |   bucle ;
+
+asignacion          ::= identificador TOK_ASIGNACION exp {: System.out.println("asignacion"); :};
+
+condicional         ::= if paren_izq exp paren_der llave_izq sentencias llave_der {: System.out.println("if"); :}
+                    |   if paren_izq exp paren_der llave_izq sentencias llave_der else llave_izq sentencias llave_der {: System.out.println("if else"); :};
+
+bucle               ::= while paren_izq exp paren_der llave_izq sentencias llave_der {: System.out.println("while"); :};
+
+lectura             ::= TOK_SCANF identificador {: System.out.println("lectura"); :};
+
+escritura           ::= TOK_PRINTF exp {: System.out.println("escritura"); :};
+
+exp                 ::= exp TOK_MAS exp {: System.out.println("suma"); :}
+                    |   exp TOK_MENOS exp {: System.out.println("resta"); :}
+                    |   exp TOK_DIVISION exp {: System.out.println("division"); :}
+                    |   exp TOK_ASTERISCO exp {: System.out.println("multiplicación"); :}
+                    |   TOK_MENOS exp {: System.out.println("menos unario"); :} %prec TOK_MENOSU
+                    |   exp TOK_AND exp {: System.out.println("and"); :}
+                    |   exp TOK_OR exp {: System.out.println("or"); :}
+                    |   TOK_NOT exp {: System.out.println("not"); :}
+                    |   identificador {: System.out.println("identificador"); :}
+                    |   constante {: System.out.println("número"); :}
+                    |   TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO {: System.out.println("expresión"); :}
+                    |   TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO {: System.out.println("comparación"); :};
+
+comparacion         ::= exp TOK_IGUAL exp {: System.out.println("igual"); :}
+                    |   exp TOK_DISTINTO exp {: System.out.println("distinto"); :}
+                    |   exp TOK_MENORIGUAL exp {: System.out.println("menor o igual"); :}
+                    |   exp TOK_MAYORIGUAL exp {: System.out.println("mayor o igual"); :}
+                    |   exp TOK_MENOR exp {: System.out.println("menor"); :}
+                    |   exp TOK_MAYOR exp {: System.out.println("mayor"); :};
+
+constante           ::= constante_logica
+                    |   constante_entera ;
+
+constante_entera    ::= TOK_CONSTANTE_ENTERA {: System.out.println(getYylex().lexema); :};
+
+constante_logica    ::= TOK_TRUE {: System.out.println("true"); :}
+                    |   TOK_FALSE {: System.out.println("false"); :};
+
+main                ::= TOK_MAIN {: System.out.println("main"); :};
+
+int                 ::= TOK_INT {: System.out.println("int"); :};
+
+boolean             ::= TOK_BOOLEAN {: System.out.println("boolean"); :};
+
+puntoycoma          ::= TOK_PUNTOYCOMA {: System.out.println(";"); :};
+
+coma                ::= TOK_COMA {:  System.out.println(","); :};
+
+while               ::= TOK_WHILE {: System.out.println("while"); :} ;
+
+if                  ::= TOK_IF {: System.out.println("IF"); :} ;
+
+else                ::= TOK_ELSE {: System.out.println("ELSE"); :} ;
+
+identificador       ::= TOK_IDENTIFICADOR {: System.out.println(getYylex().lexema); :};
+
+llave_izq           ::= TOK_LLAVEIZQUIERDA {: System.out.println("{"); :} ;
+
+llave_der           ::= TOK_LLAVEDERECHA {: System.out.println("}"); :} ;
+
+paren_izq           ::= TOK_PARENTESISIZQUIERDO {: System.out.println("("); :} ;
+
+paren_der           ::= TOK_PARENTESISDERECHO {: System.out.println(")"); :} ;
