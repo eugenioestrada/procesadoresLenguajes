@@ -1,15 +1,9 @@
-main
-{
-int x;
-int y;
-int z;
+// Programa que eleva un numero al cuadrado
 
-z=x++y;
-printf z;
+main {
+  int x, resultado;
 
+  scanf x; // Esta linea lee el valor de x
+  resultado = x*x; // Esta linea calcula el cuadrado de x
+  printf resultado; // Esta linea imprime el resultado
 }
-
-// Este programa tiene un error sintactico que genera
-// el siguiente mensaje
-//    ****Error sintactico en [lin 7, col 5]
-
