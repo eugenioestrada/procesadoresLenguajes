@@ -8,42 +8,42 @@ package analizadorSemantico;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int TOK_MAYORIGUAL = 25;
-  public static final int TOK_COMA = 32;
-  public static final int TOK_LLAVEIZQUIERDA = 8;
-  public static final int TOK_FALSE = 13;
+  public static final int TOK_MAYORIGUAL = 22;
+  public static final int TOK_COMA = 29;
+  public static final int TOK_LLAVEIZQUIERDA = 9;
+  public static final int TOK_FALSE = 33;
   public static final int TOK_ASTERISCO = 4;
-  public static final int TOK_ELSE = 16;
-  public static final int TOK_ASIGNACION = 33;
-  public static final int TOK_SCANF = 20;
-  public static final int TOK_PARENTESISIZQUIERDO = 6;
-  public static final int TOK_CONSTANTE_ENTERA = 10;
+  public static final int TOK_ELSE = 13;
+  public static final int TOK_ASIGNACION = 30;
+  public static final int TOK_SCANF = 17;
+  public static final int TOK_PARENTESISIZQUIERDO = 7;
+  public static final int TOK_CONSTANTE_ENTERA = 32;
   public static final int TOK_MAS = 2;
   public static final int EOF = 0;
-  public static final int TOK_IGUAL = 28;
+  public static final int TOK_IGUAL = 25;
   public static final int error = 1;
   public static final int TOK_IDENTIFICADOR = 35;
-  public static final int TOK_PUNTOYCOMA = 34;
-  public static final int TOK_INT = 19;
-  public static final int TOK_LLAVEDERECHA = 9;
+  public static final int TOK_PUNTOYCOMA = 31;
+  public static final int TOK_INT = 16;
+  public static final int TOK_LLAVEDERECHA = 10;
   public static final int TOK_DIVISION = 5;
-  public static final int TOK_NOT = 29;
-  public static final int TOK_AND = 31;
+  public static final int TOK_NOT = 26;
+  public static final int TOK_AND = 28;
   public static final int TOK_MENOS = 3;
-  public static final int TOK_MENOR = 24;
-  public static final int TOK_PARENTESISDERECHO = 7;
-  public static final int TOK_ERROR = 12;
-  public static final int TOK_MAYOR = 23;
-  public static final int TOK_DISTINTO = 27;
-  public static final int TOK_PRINTF = 21;
-  public static final int TOK_MENORIGUAL = 26;
-  public static final int TOK_OR = 30;
-  public static final int TOK_MAIN = 22;
-  public static final int TOK_WHILE = 15;
-  public static final int TOK_BOOLEAN = 18;
-  public static final int TOK_IF = 17;
-  public static final int TOK_MENOSU = 11;
-  public static final int TOK_TRUE = 14;
+  public static final int TOK_MENOR = 21;
+  public static final int TOK_PARENTESISDERECHO = 8;
+  public static final int TOK_ERROR = 11;
+  public static final int TOK_MAYOR = 20;
+  public static final int TOK_DISTINTO = 24;
+  public static final int TOK_PRINTF = 18;
+  public static final int TOK_MENORIGUAL = 23;
+  public static final int TOK_OR = 27;
+  public static final int TOK_MAIN = 19;
+  public static final int TOK_WHILE = 12;
+  public static final int TOK_BOOLEAN = 15;
+  public static final int TOK_IF = 14;
+  public static final int TOK_MENOSU = 6;
+  public static final int TOK_TRUE = 34;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -51,15 +51,12 @@ public class sym {
   "TOK_MENOS",
   "TOK_ASTERISCO",
   "TOK_DIVISION",
+  "TOK_MENOSU",
   "TOK_PARENTESISIZQUIERDO",
   "TOK_PARENTESISDERECHO",
   "TOK_LLAVEIZQUIERDA",
   "TOK_LLAVEDERECHA",
-  "TOK_CONSTANTE_ENTERA",
-  "TOK_MENOSU",
   "TOK_ERROR",
-  "TOK_FALSE",
-  "TOK_TRUE",
   "TOK_WHILE",
   "TOK_ELSE",
   "TOK_IF",
@@ -80,6 +77,9 @@ public class sym {
   "TOK_COMA",
   "TOK_ASIGNACION",
   "TOK_PUNTOYCOMA",
+  "TOK_CONSTANTE_ENTERA",
+  "TOK_FALSE",
+  "TOK_TRUE",
   "TOK_IDENTIFICADOR"
   };
 }

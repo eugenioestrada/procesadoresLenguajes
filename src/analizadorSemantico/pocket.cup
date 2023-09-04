@@ -5,6 +5,7 @@ import java.io.Writer;
 import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.util.List;
 
 parser code {:
     public void syntax_error(Symbol cur_token) {
@@ -23,16 +24,18 @@ parser code {:
              System.out.println(e.getMessage());
         }
     }
+
+    private void printSemanticError(String error) {
+        String str = "****Error semántico: " + error;
+        System.err.println(str);
+    }
 :}
 
 /* Lista de terminales */
 terminal TOK_MAS, TOK_MENOS, TOK_ASTERISCO, TOK_DIVISION;
-terminal TOK_PARENTESISIZQUIERDO, TOK_PARENTESISDERECHO, TOK_LLAVEIZQUIERDA, TOK_LLAVEDERECHA;
-terminal TOK_CONSTANTE_ENTERA;
 terminal TOK_MENOSU;
+terminal TOK_PARENTESISIZQUIERDO, TOK_PARENTESISDERECHO, TOK_LLAVEIZQUIERDA, TOK_LLAVEDERECHA;
 terminal TOK_ERROR;
-terminal TOK_FALSE;
-terminal TOK_TRUE;
 terminal TOK_WHILE;
 terminal TOK_ELSE;
 terminal TOK_IF;
@@ -53,18 +56,19 @@ terminal TOK_AND;
 terminal TOK_COMA;
 terminal TOK_ASIGNACION;
 terminal TOK_PUNTOYCOMA;
-terminal TOK_IDENTIFICADOR;
+terminal Atributos TOK_CONSTANTE_ENTERA, TOK_FALSE, TOK_TRUE, TOK_IDENTIFICADOR;
 
 /* Lista de no terminales */
+
+non terminal Atributos exp, constante, constante_entera;
+non terminal Atributos clase, clase_escalar, tipo, identificadores, identificador;
+non terminal Atributos asignacion, lectura, escritura;
+non terminal Atributos comparacion, constante_logica, numero;
+
+non terminal declaraciones, declaracion;
 non terminal programa;
-non terminal exp, constante, constante_entera;
-non terminal declaraciones, declaracion, clase, clase_escalar, tipo;
-non terminal identificadores, identificador;
-non terminal sentencias, sentencia, sentencia_simple;
-non terminal bloque, asignacion, lectura, escritura;
+non terminal sentencias, sentencia, sentencia_simple, bloque;
 non terminal condicional, bucle;
-non terminal comparacion, constante_logica;
-non terminal numero;
 
 precedence left TOK_MAS, TOK_MENOS;
 precedence left TOK_DIVISION, TOK_ASTERISCO;
@@ -83,17 +87,48 @@ programa            ::= TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones sentencias TOK
 declaraciones       ::= declaracion {: printProduccion(2, "<declaraciones> ::= <declaracion>"); :}
                     |   declaracion declaraciones {: printProduccion(3, "<declaraciones> ::= <declaracion> <declaraciones>"); :};
 
-declaracion         ::= clase identificadores TOK_PUNTOYCOMA {: printProduccion(4, "<declaracion> ::= <clase> <identificadores> ;"); :};
+declaracion         ::= clase:cls identificadores:iden TOK_PUNTOYCOMA {:
+                        List<String> identificadores = iden.getIdentificadores();
+                        for (String identificador : identificadores) {
+                            if (!Global.exists(identificador)) {
+                                Global.set(identificador, cls.getTipo());
+                            }
+                            else {
+                                printSemanticError("Las variables deben ser únicas dentro de su ámbito de aplicación.");
+                            }
+                        }
+                        printProduccion(4, "<declaracion> ::= <clase> <identificadores> ;");
+:};
 
-clase               ::= clase_escalar {: printProduccion(5, "<clase> ::= <clase_escalar>"); :} ;
+clase               ::= clase_escalar:cls {:
+    RESULT = cls;
+    printProduccion(5, "<clase> ::= <clase_escalar>");
+:} ;
 
-clase_escalar       ::= tipo {: printProduccion(9, "<clase_escalar> ::= <tipo>"); :};
+clase_escalar       ::= tipo:tip {:
+    RESULT = tip;
+    printProduccion(9, "<clase_escalar> ::= <tipo>");
+:};
 
-tipo                ::= TOK_INT {: printProduccion(10, "<tipo> ::= int"); :}
-                    |   TOK_BOOLEAN {: printProduccion(11, "<tipo> ::= boolean"); :};
+tipo                ::= TOK_INT {:
+    RESULT = new Atributos(Tipos.Int, 0, null);
+    printProduccion(10, "<tipo> ::= int");
+:}
+                    |   TOK_BOOLEAN {:
+    RESULT = new Atributos(Tipos.Boolean, 0, null);
+    printProduccion(11, "<tipo> ::= boolean");
+:};
 
-identificadores     ::= identificador {: printProduccion(18, "<identificadores> ::= <identificador>"); :}
-                    |   identificador TOK_COMA identificadores {: printProduccion(19, "<identificadores> ::= <identificador> , <identificadores>"); :};
+identificadores     ::= identificador:iden {:
+                            RESULT = new Atributos(Tipos.Desconocido, 0, null);
+                            RESULT.addIdentificador(iden.getNombre());
+                            printProduccion(18, "<identificadores> ::= <identificador>");
+:}
+                    |   identificador:iden TOK_COMA identificadores:list {:
+                            RESULT = list;
+                            RESULT.addIdentificador(iden.getNombre());
+                            printProduccion(19, "<identificadores> ::= <identificador> , <identificadores>");
+:};
 
 sentencias          ::= sentencia {: printProduccion(30, "<sentencias> ::= <sentencia>"); :}
                     |   sentencia sentencias {: printProduccion(31, "<sentencias> ::= <sentencia> <sentencias>"); :};
@@ -108,45 +143,289 @@ sentencia_simple    ::= asignacion {: printProduccion(34, "<sentencia_simple> ::
 bloque              ::= condicional {: printProduccion(40, "<bloque> ::= <condicional>"); :}
                     |   bucle {: printProduccion(41, "<bloque> ::= <bucle>"); :};
 
-asignacion          ::= identificador TOK_ASIGNACION exp {: printProduccion(43, "<asignacion> ::= <identificador> = <exp>"); :};
+asignacion          ::= identificador:iden TOK_ASIGNACION exp:expr {:
+    String nombre = iden.getNombre();
+    if (Global.exists(nombre)) {
+        Tipos tipo = Global.getTipo(nombre);
+        if (tipo == expr.getTipo()) {
+            printProduccion(43, "<asignacion> ::= <identificador> = <exp>");
+        }
+        else {
+            printSemanticError("Sólo son válidas las asignaciones cuando el identificador (" + tipo + ") y la expresión (" + expr.getTipo() + ") son del mismo tipo.");
+        }
+    }
+    else {
+        printSemanticError("Las variables (" + nombre + ") deben ser definidas antes de ser utilizadas.");
+    }
+:};
 
 condicional         ::= TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {: printProduccion(50, "<condicional> ::= if ( <exp> ) { <sentencias> }"); :}
                     |   TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {: printProduccion(51, "<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }"); :};
 
 bucle               ::= TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {: printProduccion(52, "<bucle> ::= while ( <exp> ) { <sentencias> }"); :};
 
-lectura             ::= TOK_SCANF identificador {: printProduccion(54, "<lectura> ::= scanf <identificador>"); :};
+lectura             ::= TOK_SCANF identificador:iden {:
+    String nombre = iden.getNombre();
+    if (Global.exists(nombre)) {
+        Tipos tipo = Global.getTipo(nombre);
+        if (tipo == Tipos.Int || tipo == Tipos.Boolean) {
+            printProduccion(54, "<lectura> ::= scanf <identificador>");
+        }
+        else {
+            printSemanticError("Sólo está contemplada la lectura de datos enteros y lógicos.");
+        }
+    }
+    else {
+        printSemanticError("Las variables (" + nombre + ") deben ser definidas antes de ser utilizadas.");
+    }
+:};
 
-escritura           ::= TOK_PRINTF exp {: printProduccion(56, "<escritura> ::= printf <exp>"); :};
+escritura           ::= TOK_PRINTF exp:expr {:
+    Tipos tipo = expr.getTipo();
+    if (tipo == Tipos.Int || tipo == Tipos.Boolean) {
+        printProduccion(56, "<escritura> ::= printf <exp>");
+    }
+    else {
+        printSemanticError("La operación de escritura de datos de tipo escalar trabaja con expresiones de tipo lógico o numérico.");
+    }
+:};
 
-exp                 ::= exp TOK_MAS exp {: printProduccion(72, "<exp> ::= <exp> + <exp>"); :}
-                    |   exp TOK_MENOS exp {: printProduccion(73, "<exp> ::= <exp> - <exp>"); :}
-                    |   exp TOK_DIVISION exp {: printProduccion(74, "<exp> ::= <exp> / <exp>"); :}
-                    |   exp TOK_ASTERISCO exp {: printProduccion(75, "<exp> ::= <exp> * <exp>"); :}
-                    |   TOK_MENOS exp {: printProduccion(76, "<exp> ::= - <exp>"); :} %prec TOK_MENOSU
-                    |   exp TOK_AND exp {: printProduccion(77, "<exp> ::= <exp> && <exp>"); :}
-                    |   exp TOK_OR exp {: printProduccion(78, "<exp> ::= <exp> || <exp>"); :}
-                    |   TOK_NOT exp {: printProduccion(79, "<exp> ::= ! <exp>"); :}
-                    |   identificador {: printProduccion(80, "<exp> ::= <identificador>"); :}
-                    |   constante {: printProduccion(81, "<exp> ::= <constante>"); :}
-                    |   TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO {: printProduccion(82, "<exp> ::= ( <exp> )"); :}
-                    |   TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO {: printProduccion(83, "<exp> ::= ( <comparacion> )"); :};
+exp                 ::= exp:expi TOK_MAS exp:expd {:
+    if (expi.getTipo() == Tipos.Int && expd.getTipo() == Tipos.Int ) {
+        RESULT = new Atributos(Tipos.Int, expi.getValor() + expd.getValor(), null);
+        printProduccion(72, "<exp> ::= <exp> + <exp>");
+    }
+    else {
+        printSemanticError("En las expresiones aritméticas sólo pueden aparecer datos de tipo numérico.");
+    }
+:}
+                    |   exp:expi TOK_MENOS exp:expd {:
+    if (expi.getTipo() == Tipos.Int && expd.getTipo() == Tipos.Int ) {
+        RESULT = new Atributos(Tipos.Int, expi.getValor() - expd.getValor(), null);
+        printProduccion(73, "<exp> ::= <exp> - <exp>");
+    }
+    else {
+        printSemanticError("En las expresiones aritméticas sólo pueden aparecer datos de tipo numérico.");
+    }
+:}
+                    |   exp:expi TOK_DIVISION exp:expd {:
+    if (expi.getTipo() == Tipos.Int && expd.getTipo() == Tipos.Int ) {
+        RESULT = new Atributos(Tipos.Int, expi.getValor() / expd.getValor(), null);
+        printProduccion(74, "<exp> ::= <exp> / <exp>");
+    }
+    else {
+        printSemanticError("En las expresiones aritméticas sólo pueden aparecer datos de tipo numérico.");
+    }
+:}
+                    |   exp:expi TOK_ASTERISCO exp:expd {:
+    if (expi.getTipo() == Tipos.Int && expd.getTipo() == Tipos.Int ) {
+        RESULT = new Atributos(Tipos.Int, expi.getValor() * expd.getValor(), null);
+        printProduccion(75, "<exp> ::= <exp> * <exp>");
+    }
+    else {
+        printSemanticError("En las expresiones aritméticas sólo pueden aparecer datos de tipo numérico.");
+    }
+:}
+                    |   TOK_MENOS exp:expr {:
+    if (expr.getTipo() == Tipos.Int ) {
+        RESULT = new Atributos(Tipos.Int, - expr.getValor(), null);
+        printProduccion(76, "<exp> ::= - <exp>");
+    }
+    else {
+        printSemanticError("En las expresiones aritméticas sólo pueden aparecer datos de tipo numérico.");
+    }
+:} %prec TOK_MENOSU
+                    |   exp:expi TOK_AND exp:expd {:
+    if (expi.getTipo() == Tipos.Boolean && expd.getTipo() == Tipos.Boolean ) {
+        if (expi.getValor() == 1 && expd.getValor() == 1) {
+            RESULT = new Atributos(Tipos.Boolean, 1, null);
+        }
+        else {
+            RESULT = new Atributos(Tipos.Boolean, 0, null);
+        }
 
-comparacion         ::= exp TOK_IGUAL exp {: printProduccion(93, "<comparacion> ::= <exp> == <exp>"); :}
-                    |   exp TOK_DISTINTO exp {: printProduccion(94, "<comparacion> ::= <exp> != <exp>"); :}
-                    |   exp TOK_MENORIGUAL exp {: printProduccion(95, "<comparacion> ::= <exp> <= <exp>"); :}
-                    |   exp TOK_MAYORIGUAL exp {: printProduccion(96, "<comparacion> ::= <exp> >= <exp>"); :}
-                    |   exp TOK_MENOR exp {: printProduccion(97, "<comparacion> ::= <exp> < <exp>"); :}
-                    |   exp TOK_MAYOR exp {: printProduccion(98, "<comparacion> ::= <exp> > <exp>"); :};
+        printProduccion(77, "<exp> ::= <exp> && <exp>");
+    }
+    else {
+        printSemanticError("En las expresiones aritméticas sólo pueden aparecer datos de tipo numérico.");
+    }
+:}
+                    |   exp:expi TOK_OR exp:expd {:
+    if (expi.getTipo() == Tipos.Boolean && expd.getTipo() == Tipos.Boolean ) {
+        if (expi.getValor() == 1 || expd.getValor() == 1) {
+            RESULT = new Atributos(Tipos.Boolean, 1, null);
+        }
+        else {
+            RESULT = new Atributos(Tipos.Boolean, 0, null);
+        }
 
-constante           ::= constante_logica {: printProduccion(99, "<constante> ::= <constante_logica>"); :}
-                    |   constante_entera {: printProduccion(100, "<constante> ::= <constante_entera>"); :};
+        printProduccion(78, "<exp> ::= <exp> || <exp>");
+    }
+    else {
+        printSemanticError("En las expresiones aritméticas sólo pueden aparecer datos de tipo numérico.");
+    }
+:}
+                    |   TOK_NOT exp:expr {:
+    if (expr.getTipo() == Tipos.Boolean ) {
+        if (expr.getValor() == 1) {
+            RESULT = new Atributos(Tipos.Boolean, 0, null);
+        }
+        else {
+            RESULT = new Atributos(Tipos.Boolean, 1, null);
+        }
 
-constante_logica    ::= TOK_TRUE {: printProduccion(102, "<constante_logica> ::= true"); :}
-                    |   TOK_FALSE {: printProduccion(103, "<constante_logica> ::= false"); :};
+        printProduccion(79, "<exp> ::= ! <exp>");
+    }
+    else {
+        printSemanticError("En las expresiones lógicas sólo pueden aparecer datos de tipo lógico.");
+    }
+:}
+                    |   identificador:iden {:
+    String nombre = iden.getNombre();
+    if (Global.exists(nombre)) {
+        Tipos tipo = Global.getTipo(nombre);
+        RESULT = new Atributos(tipo, 0, nombre);
+        printProduccion(80, "<exp> ::= <identificador>");
+    }
+    else {
+        printSemanticError("Las variables (" + nombre + ") deben ser definidas antes de ser utilizadas.");
+    }
+:}
+                    |   constante:cte {:
+    RESULT = cte;
+    printProduccion(81, "<exp> ::= <constante>");
+:}
+                    |   TOK_PARENTESISIZQUIERDO exp:expr TOK_PARENTESISDERECHO {:
+    RESULT = expr;
+    printProduccion(82, "<exp> ::= ( <exp> )");
+:}
+                    |   TOK_PARENTESISIZQUIERDO comparacion:comp TOK_PARENTESISDERECHO {:
+    RESULT = comp;
+    printProduccion(83, "<exp> ::= ( <comparacion> )");
+:};
 
-constante_entera    ::= numero {: printProduccion(104, "<constante_entera> ::= <numero>"); :};
+comparacion         ::= exp:expi TOK_IGUAL exp:expd {:
+    if (expi.getTipo() == Tipos.Int && expd.getTipo() == Tipos.Int ) {
+        if (expi.getValor() == expd.getValor()) {
+            RESULT = new Atributos(Tipos.Boolean, 1, null);
+        }
+        else {
+            RESULT = new Atributos(Tipos.Boolean, 0, null);
+        }
 
-numero              ::= TOK_CONSTANTE_ENTERA {: printProduccion(105, "<numero> ::= TOK_CONSTANTE_ENTERA"); :};
+        printProduccion(93, "<comparacion> ::= <exp> == <exp>");
+    }
+    else {
+        printSemanticError("Las comparaciones sólo pueden operar con datos de tipo numérico.");
+    }
+:}
+                    |   exp:expi TOK_DISTINTO exp:expd {:
+    if (expi.getTipo() == Tipos.Int && expd.getTipo() == Tipos.Int ) {
+        if (expi.getValor() != expd.getValor()) {
+            RESULT = new Atributos(Tipos.Boolean, 1, null);
+        }
+        else {
+            RESULT = new Atributos(Tipos.Boolean, 0, null);
+        }
 
-identificador       ::= TOK_IDENTIFICADOR {: printProduccion(108, "<identificador> ::= TOK_IDENTIFICADOR"); :};
+        printProduccion(94, "<comparacion> ::= <exp> != <exp>");
+    }
+    else {
+        printSemanticError("Las comparaciones sólo pueden operar con datos de tipo numérico.");
+    }
+ :}
+                    |   exp:expi TOK_MENORIGUAL exp:expd {:
+    if (expi.getTipo() == Tipos.Int && expd.getTipo() == Tipos.Int ) {
+        if (expi.getValor() <= expd.getValor()) {
+            RESULT = new Atributos(Tipos.Boolean, 1, null);
+        }
+        else {
+            RESULT = new Atributos(Tipos.Boolean, 0, null);
+        }
+
+        printProduccion(95, "<comparacion> ::= <exp> <= <exp>");
+    }
+    else {
+        printSemanticError("Las comparaciones sólo pueden operar con datos de tipo numérico.");
+    }
+:}
+                    |   exp:expi TOK_MAYORIGUAL exp:expd {:
+    if (expi.getTipo() == Tipos.Int && expd.getTipo() == Tipos.Int ) {
+        if (expi.getValor() >= expd.getValor()) {
+            RESULT = new Atributos(Tipos.Boolean, 1, null);
+        }
+        else {
+            RESULT = new Atributos(Tipos.Boolean, 0, null);
+        }
+
+        printProduccion(96, "<comparacion> ::= <exp> >= <exp>");
+    }
+    else {
+        printSemanticError("Las comparaciones sólo pueden operar con datos de tipo numérico.");
+    }
+:}
+                    |   exp:expi TOK_MENOR exp:expd {:
+    if (expi.getTipo() == Tipos.Int && expd.getTipo() == Tipos.Int ) {
+        if (expi.getValor() < expd.getValor()) {
+            RESULT = new Atributos(Tipos.Boolean, 1, null);
+        }
+        else {
+            RESULT = new Atributos(Tipos.Boolean, 0, null);
+        }
+
+        printProduccion(97, "<comparacion> ::= <exp> < <exp>");
+    }
+    else {
+        printSemanticError("Las comparaciones sólo pueden operar con datos de tipo numérico.");
+    }
+:}
+                    |   exp:expi TOK_MAYOR exp:expd {:
+    if (expi.getTipo() == Tipos.Int && expd.getTipo() == Tipos.Int ) {
+        if (expi.getValor() > expd.getValor()) {
+            RESULT = new Atributos(Tipos.Boolean, 1, null);
+        }
+        else {
+            RESULT = new Atributos(Tipos.Boolean, 0, null);
+        }
+        printProduccion(98, "<comparacion> ::= <exp> > <exp>");
+    }
+    else {
+        printSemanticError("Las comparaciones sólo pueden operar con datos de tipo numérico.");
+    }
+:};
+
+constante           ::= constante_logica:cte {:
+    RESULT = cte;
+    printProduccion(99, "<constante> ::= <constante_logica>");
+:}
+                    |   constante_entera:cte {:
+    RESULT = cte;
+    printProduccion(100, "<constante> ::= <constante_entera>");
+:};
+
+constante_logica    ::= TOK_TRUE:val {:
+    RESULT = val;
+    RESULT.setTipo(Tipos.Boolean);
+    printProduccion(102, "<constante_logica> ::= true");
+:}
+                    |   TOK_FALSE:val {:
+    RESULT = val;
+    RESULT.setTipo(Tipos.Boolean);
+    printProduccion(103, "<constante_logica> ::= false");
+:};
+
+constante_entera    ::= numero:val {:
+    RESULT = val;
+    printProduccion(104, "<constante_entera> ::= <numero>");
+:};
+
+numero              ::= TOK_CONSTANTE_ENTERA:cte {:
+    RESULT = cte;
+    cte.setTipo(Tipos.Int);
+    printProduccion(105, "<numero> ::= TOK_CONSTANTE_ENTERA");
+:};
+
+identificador       ::= TOK_IDENTIFICADOR:iden {:
+    RESULT = iden;
+    printProduccion(108, "<identificador> ::= TOK_IDENTIFICADOR");
+:};

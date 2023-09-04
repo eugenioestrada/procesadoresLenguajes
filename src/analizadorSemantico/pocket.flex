@@ -89,7 +89,7 @@ espacio = [ \t\r\n]
     }
     else {
         writeln(";D:\t" + lexema);
-        return new Symbol(sym.TOK_IDENTIFICADOR, linea(), columna());
+        return new Symbol(sym.TOK_IDENTIFICADOR, linea(), columna(), new Atributos(Tipos.Desconocido, 0, lexema));
     }
 }
 {digito}+ {
