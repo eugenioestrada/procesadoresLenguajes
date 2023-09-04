@@ -822,7 +822,7 @@ class Yylex implements java_cup.runtime.Scanner {
           case 11:
             { lexema = yytext();
     writeln(";D:\t" + lexema);
-    return new Symbol(sym.TOK_CONSTANTE_ENTERA, linea(), columna());
+    return new Symbol(sym.TOK_CONSTANTE_ENTERA, linea(), columna(), new Atributos(Tipos.Desconocido, Integer.valueOf(yytext())));
             }
           // fall through
           case 45: break;
@@ -920,12 +920,12 @@ class Yylex implements java_cup.runtime.Scanner {
           // fall through
           case 62: break;
           case 29:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_TRUE, linea(), columna());
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_TRUE, linea(), columna(), new Atributos(Tipos.Desconocido, 1));
             }
           // fall through
           case 63: break;
           case 30:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_FALSE, linea(), columna());
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_FALSE, linea(), columna(), new Atributos(Tipos.Desconocido, 0));
             }
           // fall through
           case 64: break;

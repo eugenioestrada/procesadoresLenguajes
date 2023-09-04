@@ -78,8 +78,8 @@ espacio = [ \t\r\n]
 
 /* Identificadores y constantes */
 
-"true" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_TRUE, linea(), columna()); }
-"false" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_FALSE, linea(), columna()); }
+"true" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_TRUE, linea(), columna(), new Atributos(Tipos.Desconocido, 1, null)); }
+"false" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_FALSE, linea(), columna(), new Atributos(Tipos.Desconocido, 0, null)); }
 
 {letra}({letra}|{digito})* {
     lexema = yytext();
@@ -95,7 +95,7 @@ espacio = [ \t\r\n]
 {digito}+ {
     lexema = yytext();
     writeln(";D:\t" + lexema);
-    return new Symbol(sym.TOK_CONSTANTE_ENTERA, linea(), columna());
+    return new Symbol(sym.TOK_CONSTANTE_ENTERA, linea(), columna(), new Atributos(Tipos.Desconocido, Integer.valueOf(yytext()), null));
 }
 
 /* Eliminación de espacios */

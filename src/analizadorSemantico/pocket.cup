@@ -93,7 +93,7 @@ tipo                ::= TOK_INT {: printProduccion(10, "<tipo> ::= int"); :}
                     |   TOK_BOOLEAN {: printProduccion(11, "<tipo> ::= boolean"); :};
 
 identificadores     ::= identificador {: printProduccion(18, "<identificadores> ::= <identificador>"); :}
-                    |   identificador TOK_COMA identificadores {: printProduccion(19, "<identificadores> ::=<identificador>,<identificadores>"); :};
+                    |   identificador TOK_COMA identificadores {: printProduccion(19, "<identificadores> ::= <identificador> , <identificadores>"); :};
 
 sentencias          ::= sentencia {: printProduccion(30, "<sentencias> ::= <sentencia>"); :}
                     |   sentencia sentencias {: printProduccion(31, "<sentencias> ::= <sentencia> <sentencias>"); :};
