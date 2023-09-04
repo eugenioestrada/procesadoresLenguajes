@@ -9,6 +9,10 @@ import java.io.FileWriter;
 
 %cup
 
+%eofval{
+    return new Symbol(sym.EOF, linea(), columna());
+%eofval}
+
 %line
 %column
 %{
@@ -36,61 +40,61 @@ espacio = [ \t\r\n]
 
 /* Palabras reservadas */
 
-"main" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAIN); }
-"int" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_INT); }
-"boolean" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_BOOLEAN); }
-"if" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_IF); }
-"else" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ELSE); }
-"while" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_WHILE); }
-"printf" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PRINTF); }
-"scanf" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_SCANF); }
+"main" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAIN, linea(), columna()); }
+"int" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_INT, linea(), columna()); }
+"boolean" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_BOOLEAN, linea(), columna()); }
+"if" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_IF, linea(), columna()); }
+"else" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ELSE, linea(), columna()); }
+"while" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_WHILE, linea(), columna()); }
+"printf" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PRINTF, linea(), columna()); }
+"scanf" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_SCANF, linea(), columna()); }
 
 /* Símbolos de puntuación y especiales */
 
-"{" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_LLAVEIZQUIERDA); }
-"}" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_LLAVEDERECHA); }
-"(" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PARENTESISIZQUIERDO); }
-")" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PARENTESISDERECHO); }
-"," { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_COMA); }
-";" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PUNTOYCOMA); }
+"{" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_LLAVEIZQUIERDA, linea(), columna()); }
+"}" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_LLAVEDERECHA, linea(), columna()); }
+"(" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PARENTESISIZQUIERDO, linea(), columna()); }
+")" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PARENTESISDERECHO, linea(), columna()); }
+"," { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_COMA, linea(), columna()); }
+";" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PUNTOYCOMA, linea(), columna()); }
 
 /* Operadores */
 
-"+" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAS); }
-"-" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENOS); }
-"/" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_DIVISION); }
-"*" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ASTERISCO); }
-"&&" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_AND); }
-"||" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_OR); }
-"!" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_NOT); }
-"=" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ASIGNACION); }
-"==" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_IGUAL); }
-"!=" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_DISTINTO); }
-"<=" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENORIGUAL); }
-">=" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAYORIGUAL); }
-"<" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENOR); }
-">" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAYOR); }
+"+" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAS, linea(), columna()); }
+"-" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENOS, linea(), columna()); }
+"/" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_DIVISION, linea(), columna()); }
+"*" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ASTERISCO, linea(), columna()); }
+"&&" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_AND, linea(), columna()); }
+"||" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_OR, linea(), columna()); }
+"!" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_NOT, linea(), columna()); }
+"=" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ASIGNACION, linea(), columna()); }
+"==" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_IGUAL, linea(), columna()); }
+"!=" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_DISTINTO, linea(), columna()); }
+"<=" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENORIGUAL, linea(), columna()); }
+">=" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAYORIGUAL, linea(), columna()); }
+"<" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENOR, linea(), columna()); }
+">" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAYOR, linea(), columna()); }
 
 /* Identificadores y constantes */
 
-"true" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_TRUE); }
-"false" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_FALSE); }
+"true" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_TRUE, linea(), columna()); }
+"false" { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_FALSE, linea(), columna()); }
 
 {letra}({letra}|{digito})* {
     lexema = yytext();
     if (yylength() > 100) {
         System.out.println("****ERROR MORFROLÓGICO EN [lin " + linea() + ", col " + columna() + "]: IDENTIFICADOR DEMASIADO LARGO (" + lexema + ")");
-        return new Symbol(sym.TOK_ERROR);
+        return new Symbol(sym.TOK_ERROR, linea(), columna());
     }
     else {
         writeln(";D:\t" + lexema);
-        return new Symbol(sym.TOK_IDENTIFICADOR);
+        return new Symbol(sym.TOK_IDENTIFICADOR, linea(), columna());
     }
 }
 {digito}+ {
     lexema = yytext();
     writeln(";D:\t" + lexema);
-    return new Symbol(sym.TOK_CONSTANTE_ENTERA);
+    return new Symbol(sym.TOK_CONSTANTE_ENTERA, linea(), columna());
 }
 
 /* Eliminación de espacios */
@@ -105,5 +109,5 @@ espacio = [ \t\r\n]
 
 . {
     System.out.println("****ERROR MORFROLÓGICO EN [lin " + linea() + ", col " + columna() + "]: CARÁCTER NO PERMITIDO (" + yytext() + ")");
-    return new Symbol(sym.TOK_ERROR);
+    return new Symbol(sym.TOK_ERROR, linea(), columna());
 }

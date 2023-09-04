@@ -762,13 +762,14 @@ class Yylex implements java_cup.runtime.Scanner {
       if (zzInput == YYEOF && zzStartRead == zzCurrentPos) {
         zzAtEOF = true;
             zzDoEOF();
-          { return new java_cup.runtime.Symbol(sym.EOF); }
+          {     return new Symbol(sym.EOF, linea(), columna());
+ }
       }
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1:
             { System.out.println("****ERROR MORFROLÓGICO EN [lin " + linea() + ", col " + columna() + "]: CARÁCTER NO PERMITIDO (" + yytext() + ")");
-    return new Symbol(sym.TOK_ERROR);
+    return new Symbol(sym.TOK_ERROR, linea(), columna());
             }
           // fall through
           case 35: break;
@@ -778,69 +779,69 @@ class Yylex implements java_cup.runtime.Scanner {
           // fall through
           case 36: break;
           case 3:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_NOT);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_NOT, linea(), columna());
             }
           // fall through
           case 37: break;
           case 4:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PARENTESISIZQUIERDO);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PARENTESISIZQUIERDO, linea(), columna());
             }
           // fall through
           case 38: break;
           case 5:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PARENTESISDERECHO);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PARENTESISDERECHO, linea(), columna());
             }
           // fall through
           case 39: break;
           case 6:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ASTERISCO);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ASTERISCO, linea(), columna());
             }
           // fall through
           case 40: break;
           case 7:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAS);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAS, linea(), columna());
             }
           // fall through
           case 41: break;
           case 8:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_COMA);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_COMA, linea(), columna());
             }
           // fall through
           case 42: break;
           case 9:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENOS);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENOS, linea(), columna());
             }
           // fall through
           case 43: break;
           case 10:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_DIVISION);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_DIVISION, linea(), columna());
             }
           // fall through
           case 44: break;
           case 11:
             { lexema = yytext();
     writeln(";D:\t" + lexema);
-    return new Symbol(sym.TOK_CONSTANTE_ENTERA);
+    return new Symbol(sym.TOK_CONSTANTE_ENTERA, linea(), columna());
             }
           // fall through
           case 45: break;
           case 12:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PUNTOYCOMA);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PUNTOYCOMA, linea(), columna());
             }
           // fall through
           case 46: break;
           case 13:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENOR);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENOR, linea(), columna());
             }
           // fall through
           case 47: break;
           case 14:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ASIGNACION);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ASIGNACION, linea(), columna());
             }
           // fall through
           case 48: break;
           case 15:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAYOR);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAYOR, linea(), columna());
             }
           // fall through
           case 49: break;
@@ -848,102 +849,102 @@ class Yylex implements java_cup.runtime.Scanner {
             { lexema = yytext();
     if (yylength() > 100) {
         System.out.println("****ERROR MORFROLÓGICO EN [lin " + linea() + ", col " + columna() + "]: IDENTIFICADOR DEMASIADO LARGO (" + lexema + ")");
-        return new Symbol(sym.TOK_ERROR);
+        return new Symbol(sym.TOK_ERROR, linea(), columna());
     }
     else {
         writeln(";D:\t" + lexema);
-        return new Symbol(sym.TOK_IDENTIFICADOR);
+        return new Symbol(sym.TOK_IDENTIFICADOR, linea(), columna());
     }
             }
           // fall through
           case 50: break;
           case 17:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_LLAVEIZQUIERDA);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_LLAVEIZQUIERDA, linea(), columna());
             }
           // fall through
           case 51: break;
           case 18:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_LLAVEDERECHA);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_LLAVEDERECHA, linea(), columna());
             }
           // fall through
           case 52: break;
           case 19:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_DISTINTO);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_DISTINTO, linea(), columna());
             }
           // fall through
           case 53: break;
           case 20:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_AND);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_AND, linea(), columna());
             }
           // fall through
           case 54: break;
           case 21:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENORIGUAL);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MENORIGUAL, linea(), columna());
             }
           // fall through
           case 55: break;
           case 22:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_IGUAL);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_IGUAL, linea(), columna());
             }
           // fall through
           case 56: break;
           case 23:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAYORIGUAL);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAYORIGUAL, linea(), columna());
             }
           // fall through
           case 57: break;
           case 24:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_IF);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_IF, linea(), columna());
             }
           // fall through
           case 58: break;
           case 25:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_OR);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_OR, linea(), columna());
             }
           // fall through
           case 59: break;
           case 26:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_INT);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_INT, linea(), columna());
             }
           // fall through
           case 60: break;
           case 27:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ELSE);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_ELSE, linea(), columna());
             }
           // fall through
           case 61: break;
           case 28:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAIN);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_MAIN, linea(), columna());
             }
           // fall through
           case 62: break;
           case 29:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_TRUE);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_TRUE, linea(), columna());
             }
           // fall through
           case 63: break;
           case 30:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_FALSE);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_FALSE, linea(), columna());
             }
           // fall through
           case 64: break;
           case 31:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_SCANF);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_SCANF, linea(), columna());
             }
           // fall through
           case 65: break;
           case 32:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_WHILE);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_WHILE, linea(), columna());
             }
           // fall through
           case 66: break;
           case 33:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PRINTF);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_PRINTF, linea(), columna());
             }
           // fall through
           case 67: break;
           case 34:
-            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_BOOLEAN);
+            { writeln(";D:\t" + yytext()); return new Symbol(sym.TOK_BOOLEAN, linea(), columna());
             }
           // fall through
           case 68: break;

@@ -7,13 +7,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 
 parser code {:
-    private Yylex getYylex() {
-        return (Yylex)getScanner();
-    }
-
     public void syntax_error(Symbol cur_token) {
-        Yylex s = getYylex();
-        String str = "****Error sintactico en [lin " + s.linea() + ", col " + s.columna() + "]";
+        String str = "****Error sintactico en [lin " + cur_token.left + ", col " + cur_token.right + "]";
 	    System.err.println(str);
     }
 
