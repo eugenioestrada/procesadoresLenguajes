@@ -24,7 +24,7 @@ import java.io.FileWriter;
     private void writeln(String str) {
         Writer writer;
         try {
-             writer = new BufferedWriter(new FileWriter("sinout.txt", true));
+             writer = new BufferedWriter(new FileWriter("programa.asm", true));
              writer.write(str + "\n");
              writer.close();
         } catch (IOException e) {

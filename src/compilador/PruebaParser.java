@@ -14,7 +14,7 @@ public class PruebaParser {
         Writer writer;
 
         try {
-            writer = new BufferedWriter(new FileWriter("sinout.txt", false));
+            writer = new BufferedWriter(new FileWriter("programa.asm", false));
             writer.write("");
             writer.close();
         } catch (IOException e) {

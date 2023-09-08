@@ -13,16 +13,19 @@ parser code {:
 	    System.err.println(str);
     }
 
-    private void printProduccion(int num, String produccion) {
-        Writer writer;
-        String str = ";R" + num + ":\t" + produccion;
-        try{
-             writer = new BufferedWriter(new FileWriter("sinout.txt", true));
+    private void println(String str) {
+        try {
+             Writer writer = new BufferedWriter(new FileWriter("programa.asm", true));
              writer.write(str + "\n");
              writer.close();
         } catch (IOException e) {
              System.out.println(e.getMessage());
         }
+    }
+
+    private void printProduccion(int num, String produccion) {
+        String str = ";R" + num + ":\t" + produccion;
+        println(str);
     }
 
     private void printSemanticError(String error) {
@@ -69,6 +72,7 @@ non terminal declaraciones, declaracion;
 non terminal programa;
 non terminal sentencias, sentencia, sentencia_simple, bloque;
 non terminal condicional, bucle;
+non terminal main;
 
 precedence left TOK_MAS, TOK_MENOS;
 precedence left TOK_DIVISION, TOK_ASTERISCO;
@@ -80,11 +84,26 @@ precedence right TOK_MENOSU;
 
 /* Reglas de la gramática */
 
-programa            ::= TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones sentencias TOK_LLAVEDERECHA {: printProduccion(1, "<programa> ::= main { <declaraciones> <funciones> <sentencias> }"); :}
-                    | TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones TOK_LLAVEDERECHA {: printProduccion(1, "<programa> ::= main { <declaraciones> <funciones> <sentencias> }"); :}
-                    | TOK_MAIN TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {: printProduccion(1, "<programa> ::= main { <declaraciones> <funciones> <sentencias> }"); :} ;
+programa            ::= main TOK_LLAVEIZQUIERDA declaraciones sentencias TOK_LLAVEDERECHA {:
+    printProduccion(1, "<programa> ::= main { <declaraciones> <funciones> <sentencias> }");
+    println("ret");
+:}
+                    | main TOK_LLAVEIZQUIERDA declaraciones TOK_LLAVEDERECHA {:
+    printProduccion(1, "<programa> ::= main { <declaraciones> <funciones> <sentencias> }");
+    println("ret");
+:}
+                    | main TOK_MAIN TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {:
+    printProduccion(1, "<programa> ::= main { <declaraciones> <funciones> <sentencias> }");
+    println("ret");
+:} ;
 
-declaraciones       ::= declaracion {: printProduccion(2, "<declaraciones> ::= <declaracion>"); :}
+declaraciones       ::= declaracion {:
+    printProduccion(2, "<declaraciones> ::= <declaracion>");
+    println("segment .text");
+    println("global _main");
+    println("extern _printf, _scanf");
+    println("_main:");
+:}
                     |   declaracion declaraciones {: printProduccion(3, "<declaraciones> ::= <declaracion> <declaraciones>"); :};
 
 declaracion         ::= clase:cls identificadores:iden TOK_PUNTOYCOMA {:
@@ -92,6 +111,7 @@ declaracion         ::= clase:cls identificadores:iden TOK_PUNTOYCOMA {:
                         for (String identificador : identificadores) {
                             if (!Global.exists(identificador)) {
                                 Global.set(identificador, cls.getTipo());
+                                println("_" + identificador +  " resd 1");
                             }
                             else {
                                 printSemanticError("Las variables deben ser únicas dentro de su ámbito de aplicación.");
@@ -119,12 +139,12 @@ tipo                ::= TOK_INT {:
     printProduccion(11, "<tipo> ::= boolean");
 :};
 
-identificadores     ::= identificador:iden {:
+identificadores     ::= TOK_IDENTIFICADOR:iden {:
                             RESULT = new Atributos(Tipos.Desconocido, 0, null);
                             RESULT.addIdentificador(iden.getNombre());
                             printProduccion(18, "<identificadores> ::= <identificador>");
 :}
-                    |   identificador:iden TOK_COMA identificadores:list {:
+                    |   TOK_IDENTIFICADOR:iden TOK_COMA identificadores:list {:
                             RESULT = list;
                             RESULT.addIdentificador(iden.getNombre());
                             printProduccion(19, "<identificadores> ::= <identificador> , <identificadores>");
@@ -149,6 +169,8 @@ asignacion          ::= identificador:iden TOK_ASIGNACION exp:expr {:
         Tipos tipo = Global.getTipo(nombre);
         if (tipo == expr.getTipo()) {
             printProduccion(43, "<asignacion> ::= <identificador> = <exp>");
+            println("pop dword eax");
+            println("mov dword [_" + nombre + "], eax");
         }
         else {
             printSemanticError("Sólo son válidas las asignaciones cuando el identificador (" + tipo + ") y la expresión (" + expr.getTipo() + ") son del mismo tipo.");
@@ -170,6 +192,9 @@ lectura             ::= TOK_SCANF identificador:iden {:
         Tipos tipo = Global.getTipo(nombre);
         if (tipo == Tipos.Int || tipo == Tipos.Boolean) {
             printProduccion(54, "<lectura> ::= scanf <identificador>");
+            println("push dword s_formato_decimal_s ; apilar el formato de lectura");
+            println("call _scanf ; llamada a la función de lectura");
+            println("add esp, 8 ; restaurar la pila");
         }
         else {
             printSemanticError("Sólo está contemplada la lectura de datos enteros y lógicos.");
@@ -184,6 +209,12 @@ escritura           ::= TOK_PRINTF exp:expr {:
     Tipos tipo = expr.getTipo();
     if (tipo == Tipos.Int || tipo == Tipos.Boolean) {
         printProduccion(56, "<escritura> ::= printf <exp>");
+        println("pop dword eax");
+        println("mov dword eax, [eax]");
+        println("push dword eax ; apilar lo que se va a imprimir");
+        println("push dword s_formato_decimal_p ; apilar el formato");
+        println("call _printf ; printf(\"%s\\d\",y);");
+        println("add esp, 8 ; restaurar la pila");
     }
     else {
         printSemanticError("La operación de escritura de datos de tipo escalar trabaja con expresiones de tipo lógico o numérico.");
@@ -194,6 +225,11 @@ exp                 ::= exp:expi TOK_MAS exp:expd {:
     if (expi.getTipo() == Tipos.Int && expd.getTipo() == Tipos.Int ) {
         RESULT = new Atributos(Tipos.Int, expi.getValor() + expd.getValor(), null);
         printProduccion(72, "<exp> ::= <exp> + <exp>");
+        println("pop dword edx ; desapilar a edx el segundo operando (1)");
+        println("pop dword eax ; desapilar a eax el primer operando (dirección de x)");
+        println("mov dword eax, [eax] ; acceder al valor de x");
+        println("add eax,edx ; sumar");
+        println("push dword eax ; apilar el resusltado");
     }
     else {
         printSemanticError("En las expresiones aritméticas sólo pueden aparecer datos de tipo numérico.");
@@ -203,6 +239,11 @@ exp                 ::= exp:expi TOK_MAS exp:expd {:
     if (expi.getTipo() == Tipos.Int && expd.getTipo() == Tipos.Int ) {
         RESULT = new Atributos(Tipos.Int, expi.getValor() - expd.getValor(), null);
         printProduccion(73, "<exp> ::= <exp> - <exp>");
+        println("pop dword edx ; desapilar a edx el segundo operando (1)");
+        println("pop dword eax ; desapilar a eax el primer operando (dirección de x)");
+        println("mov dword eax, [eax] ; acceder al valor de x");
+        println("sub eax,edx ; restar");
+        println("push dword eax ; apilar el resusltado");
     }
     else {
         printSemanticError("En las expresiones aritméticas sólo pueden aparecer datos de tipo numérico.");
@@ -230,6 +271,10 @@ exp                 ::= exp:expi TOK_MAS exp:expd {:
     if (expr.getTipo() == Tipos.Int ) {
         RESULT = new Atributos(Tipos.Int, - expr.getValor(), null);
         printProduccion(76, "<exp> ::= - <exp>");
+        println("pop dword eax ; desapilar a eax el primer operando (dirección de x)");
+        println("mov dword eax, [eax] ; acceder al valor de x");
+        println("neg eax ; menos unario");
+        println("push dword eax ; apilar el resusltado");
     }
     else {
         printSemanticError("En las expresiones aritméticas sólo pueden aparecer datos de tipo numérico.");
@@ -294,6 +339,7 @@ exp                 ::= exp:expi TOK_MAS exp:expd {:
                     |   constante:cte {:
     RESULT = cte;
     printProduccion(81, "<exp> ::= <constante>");
+    println("push dword " + cte.getValor());
 :}
                     |   TOK_PARENTESISIZQUIERDO exp:expr TOK_PARENTESISDERECHO {:
     RESULT = expr;
@@ -428,4 +474,12 @@ numero              ::= TOK_CONSTANTE_ENTERA:cte {:
 identificador       ::= TOK_IDENTIFICADOR:iden {:
     RESULT = iden;
     printProduccion(108, "<identificador> ::= TOK_IDENTIFICADOR");
+    println("push dword _" + iden.getNombre());
+:};
+
+main                ::= TOK_MAIN {:
+    println("segment .data");
+    println("s_formato_decimal_p db \"%d\", 10, 0 ; 10: salto de línea. 0: fin de la cadena.");
+    println("s_formato_decimal_s db \"%d\", 0 ; 10: salto de línea. 0: fin de la cadena.");
+    println("segment .bss");
 :};
